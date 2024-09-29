@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>素数判定・素因数分解・進数変換</title>
 <script>
+    var answer = 'enpty';
     function hantei(target) {
         var count = 0;
         for (var i = 1; i < target + 1; i++) {
@@ -68,7 +69,8 @@
                     progress++;
                 }
             }
-            document.getElementById('answer').textContent = target + ' = ' + factor_indication;
+            answer = target + ' = ' + factor_indication;
+            document.getElementById('answer').textContent = answer;
         } else {
             document.getElementById('answer').textContent = 'この数字は分解できません';
         }
@@ -88,7 +90,7 @@
             digits++;
         }
         var digits_decision = target;
-        var answer = '';
+        answer = '';
         for (var i = 0; i < digits; i ++) {
             var digits_down = 1;
             for (var j = 0; j < i; j++) {
@@ -116,7 +118,7 @@
             }
         }
         if (possible == true) {
-            var answer = 0;
+            answer = 0;
             var digits_magnification = 1;
             for (var i = Number_list.length - 1; i >= 0; i--) {
                 answer = answer + Number_list[i] * digits_magnification;
@@ -131,12 +133,24 @@
         var input_Number = Number(input_textbox.replace(/,/, ''));
         if (Number.isInteger(input_Number) == true && input_textbox.trim().length != 0) {
             var mode = document.getElementById('mode_select').value;
+            if (answer != 'enpty') {
+                var table = document.getElementById('answer_remain');
+                if (table.rows.length >= 10) {
+                    table.deleteRow(9);
+                }
+                var newRow = table.insertRow(0);
+                var newCell = newRow.insertCell();
+                var answer_now = answer;
+                var text = document.createTextNode(answer_now);
+                newCell.appendChild(text);
+            }
             if (mode == 'hantei') {
                 if (hantei(input_Number) == '素数です') {
-                    document.getElementById('answer').textContent = input_Number + 'は素数です';
+                    answer = input_Number + 'は素数です';
                 } else {
-                    document.getElementById('answer').textContent = input_Number + 'は素数ではありません';
+                    answer = input_Number + 'は素数ではありません';
                 }
+                document.getElementById('answer').textContent = answer;
             } else if (mode == 'bunkai') {
                 bunkai(input_Number);
             } else if (mode == 'nishinhenkann') {
@@ -164,9 +178,22 @@ h1 {
     padding-top: 14px;
     font-size: 25px;
 }
+table {
+    font-size: 15px;
+    margin: 10px auto;
+    width: 300px;
+}
+th {
+    text-align: center;
+    padding: 5px;
+}
+td {
+    text-align: center;
+    padding: 5px;
+}
 </style>
 </head>
-<body style="text-align: center; font-family: sans-serif;">
+<body style="text-align: center; font-family: sans-serif; font-size: 15px;">
 <h1>素数判定・素因数分解・進数変換</h1>
 <input type="text" id="Number_slot" placeholder="数字を入力">を
 <select id="mode_select">
@@ -177,5 +204,6 @@ h1 {
 </select>
 <button onclick="mode_change()">出力</button>
 <p><a id="answer"></a></p>
+<table id="answer_remain">履歴</table>
 </body>
 </html>
