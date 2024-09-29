@@ -90,7 +90,7 @@
             digits++;
         }
         var digits_decision = target;
-        answer = '';
+        var digits_Number = '';
         for (var i = 0; i < digits; i ++) {
             var digits_down = 1;
             for (var j = 0; j < i; j++) {
@@ -98,12 +98,13 @@
             }
             if (digits_decision >= digits_max * digits_down) {
                 digits_decision = digits_decision - digits_max * digits_down;
-                answer = answer + '1';
+                digits_Number = digits_Number + '1';
             } else {
-                answer = answer + '0';
+                digits_Number = digits_Number + '0';
             }
         }
-        document.getElementById('answer').textContent = target + ' = ' + answer;
+        answer = target + ' = ' + digits_Number;
+        document.getElementById('answer').textContent = answer;
     }
 
     function jisshinhenkann(target) {
@@ -118,13 +119,14 @@
             }
         }
         if (possible == true) {
-            answer = 0;
+            var total = 0;
             var digits_magnification = 1;
             for (var i = Number_list.length - 1; i >= 0; i--) {
-                answer = answer + Number_list[i] * digits_magnification;
+                total = total + Number_list[i] * digits_magnification;
                 digits_magnification = digits_magnification * 2;
             }
-            document.getElementById('answer').textContent = target + ' = ' + answer;
+            answer = target + ' = ' + total;
+            document.getElementById('answer').textContent = answer;
         }
     }
 
