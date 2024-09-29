@@ -68,7 +68,7 @@
                     progress++;
                 }
             }
-            document.getElementById('answer').textContent = factor_indication;
+            document.getElementById('answer').textContent = target + ' = ' + factor_indication;
         } else {
             document.getElementById('answer').textContent = 'この数字は分解できません';
         }
@@ -101,21 +101,29 @@
                 answer = answer + '0';
             }
         }
-        document.getElementById('answer').textContent = answer;
+        document.getElementById('answer').textContent = target + ' = ' + answer;
     }
 
     function jisshinhenkann(target) {
         var Number_list = [];
+        var possible = true;
         for (var i = 0; i < String(target).length; i++) {
             Number_list.push(String(target).slice(i, i + 1));
+            if (String(target).slice(i, i + 1) >= 2) {
+                possible = false;
+                document.getElementById('answer').textContent = 'この数字は変換できません';
+                break;
+            }
         }
-        var answer = 0;
-        var digits_magnification = 1;
-        for (var i = Number_list.length - 1; i >= 0; i--) {
-            answer = answer + Number_list[i] * digits_magnification;
-            digits_magnification = digits_magnification * 2;
+        if (possible == true) {
+            var answer = 0;
+            var digits_magnification = 1;
+            for (var i = Number_list.length - 1; i >= 0; i--) {
+                answer = answer + Number_list[i] * digits_magnification;
+                digits_magnification = digits_magnification * 2;
+            }
+            document.getElementById('answer').textContent = target + ' = ' + answer;
         }
-        document.getElementById('answer').textContent = answer;
     }
 
     function mode_change() {
@@ -125,9 +133,9 @@
             var mode = document.getElementById('mode_select').value;
             if (mode == 'hantei') {
                 if (hantei(input_Number) == '素数です') {
-                    document.getElementById('answer').textContent = '素数です';
+                    document.getElementById('answer').textContent = input_Number + 'は素数です';
                 } else {
-                    document.getElementById('answer').textContent = '素数ではありません';
+                    document.getElementById('answer').textContent = input_Number + 'は素数ではありません';
                 }
             } else if (mode == 'bunkai') {
                 bunkai(input_Number);
@@ -143,10 +151,17 @@
     }
 </script>
 <style>
+body {
+    background-color: rgb(253, 253, 253);
+    margin: 0px;
+}
 h1 {
     background-color: #39a73b;
     color: #ffffff;
     margin: 0px;
+    margin-bottom: 5px;
+    padding: 8px;
+    padding-top: 14px;
     font-size: 25px;
 }
 </style>
