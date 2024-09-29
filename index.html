@@ -70,10 +70,10 @@
                 }
             }
             answer = target + ' = ' + factor_indication;
-            document.getElementById('answer').textContent = answer;
         } else {
-            document.getElementById('answer').textContent = 'この数字は分解できません';
+            answer = target + 'はこれ以上分解できません';
         }
+        document.getElementById('answer').textContent = answer;
     }
 
     function nishinhenkann(target) {
@@ -114,7 +114,7 @@
             Number_list.push(String(target).slice(i, i + 1));
             if (String(target).slice(i, i + 1) >= 2) {
                 possible = false;
-                document.getElementById('answer').textContent = 'この数字は変換できません';
+                answer = target + 'は変換できません';
                 break;
             }
         }
@@ -126,14 +126,14 @@
                 digits_magnification = digits_magnification * 2;
             }
             answer = target + ' = ' + total;
-            document.getElementById('answer').textContent = answer;
         }
+        document.getElementById('answer').textContent = answer;
     }
 
     function mode_change() {
         var input_textbox = document.getElementById('Number_slot').value;
-        var input_Number = Number(input_textbox.replace(/,/, ''));
-        if (Number.isInteger(input_Number) == true && input_textbox.trim().length != 0) {
+        var input_Number = input_textbox.replace(/,/g, '');
+        if (Number.isInteger(Number(input_Number)) == true && input_textbox.trim().length != 0) {
             var mode = document.getElementById('mode_select').value;
             if (answer != 'enpty') {
                 var table = document.getElementById('answer_remain');
@@ -183,7 +183,6 @@ h1 {
 table {
     font-size: 15px;
     margin: 10px auto;
-    width: 300px;
 }
 th {
     text-align: center;
@@ -193,10 +192,15 @@ td {
     text-align: center;
     padding: 5px;
 }
+button {
+    margin: 0px auto;
+    margin-top: 10px;
+    display: block;
+}
 </style>
 </head>
 <body style="text-align: center; font-family: sans-serif; font-size: 15px;">
-<h1>素数判定・素因数分解・進数変換</h1>
+<h1>素数判定・素因数分解<br>二進数変換・十進数変換</h1>
 <input type="text" id="Number_slot" placeholder="数字を入力">を
 <select id="mode_select">
     <option value="hantei">素数か判定</option>
