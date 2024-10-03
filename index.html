@@ -91,16 +91,16 @@
         }
         var digits_decision = target;
         var digits_Number = '';
-        for (var i = 0; i < digits; i ++) {
+        for (var i = 0; i < digits; i++) {
             var digits_down = 1;
             for (var j = 0; j < i; j++) {
                 digits_down = digits_down / 2;
             }
             if (digits_decision >= digits_max * digits_down) {
                 digits_decision = digits_decision - digits_max * digits_down;
-                digits_Number = digits_Number + '1';
+                digits_Number = digits_Number + '1 ';
             } else {
-                digits_Number = digits_Number + '0';
+                digits_Number = digits_Number + '0 ';
             }
         }
         answer = target + ' = ' + digits_Number;
@@ -131,9 +131,13 @@
     }
 
     function mode_change() {
-        var input_textbox = document.getElementById('Number_slot').value;
-        var input_Number = input_textbox.replace(/,/g, '');
-        if (Number.isInteger(Number(input_Number)) == true && input_textbox.trim().length != 0) {
+        var input_textbox = document.getElementById('Number_slot').value.replace(/,/g, '').replace(/ /g, '');
+        if (input_textbox.length >= 16) {
+            alert('16桁以上の数字は正確に表示できません');
+            input_textbox = input_textbox.slice(0, 15);
+        }
+        var input_Number = Number(input_textbox);
+        if (Number.isInteger(input_Number) == true && input_textbox.length != 0) {
             var mode = document.getElementById('mode_select').value;
             if (answer != 'enpty') {
                 var table = document.getElementById('answer_remain');
@@ -142,8 +146,7 @@
                 }
                 var newRow = table.insertRow(0);
                 var newCell = newRow.insertCell();
-                var answer_now = answer;
-                var text = document.createTextNode(answer_now);
+                var text = document.createTextNode(answer);
                 newCell.appendChild(text);
             }
             if (mode == 'hantei') {
@@ -181,8 +184,10 @@ h1 {
     font-size: 25px;
 }
 table {
+    text-align: center;
     font-size: 15px;
     margin: 10px auto;
+    width: 300px;
 }
 th {
     text-align: center;
@@ -210,6 +215,6 @@ button {
 </select>
 <button onclick="mode_change()">出力</button>
 <p><a id="answer"></a></p>
-<table id="answer_remain">履歴</table>
+<table id="answer_remain" class="table">履歴</table>
 </body>
 </html>
