@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>素数判定・素因数分解・進数変換</title>
+<title>素因数分解・平方根計算・進数変換</title>
 <script>
     var answer = 'enpty';
     function hantei(target) {
@@ -71,7 +71,66 @@
             }
             answer = target + ' = ' + factor_indication;
         } else {
-            answer = target + 'はこれ以上分解できません';
+            if (target == 1) {
+                answer = target + 'はこれ以上素因数分解できません';
+            } else {
+                answer = target + 'は素数です';
+            }
+        }
+        document.getElementById('answer').textContent = answer;
+    }
+
+    function heihoukonn(target) {
+        var Num = target;
+        var factor_list = [];
+        if (hantei(Num) == '素数ではありません' && Num > 2) {
+            while (Num > 1) {
+                for (var i = 1; i < Num + 1; i++) {
+                    if (hantei(i) == '素数です' && Number.isInteger(Num / i) == true) {
+                        factor_list.push(i);
+                        Num = Num / i;
+                        break;
+                    }
+                    if (hantei(Num) == '素数です') {
+                        factor_list.push(Num);
+                        Num = 1;
+                        break;
+                    }
+                }
+            }
+
+            var count = 0;
+            var count_list = [];
+            for (var i = 0; i < factor_list.length; i++) {
+                if (factor_list[i] == factor_list[i + 1]) {
+                    count++;
+                } else if (factor_list[i] != factor_list[i + 1]) {
+                    count++;
+                    count_list.push(count);
+                    count = 0;
+                }
+            }
+            var factor_indication = '';
+            var progress = 0;
+            for (var i = 0; i < factor_list.length; i++) {
+                if (i == 0) {
+                    factor_indication = factor_list[i];
+                } else if (factor_list[i] == factor_list[i - 1] && factor_list[i] != factor_list[i + 1]) {
+                    factor_indication = factor_indication + '^' + count_list[progress];
+                } else if (factor_list[i] != factor_list[i - 1]) {
+                    factor_indication = factor_indication + ' × ' + factor_list[i];
+                }
+                if (factor_list[i] != factor_list[i + 1]) {
+                    progress++;
+                }
+            }
+            answer = target + ' = ' + factor_indication;
+        } else {
+            if (target == 1) {
+                answer = target;
+            } else {
+                answer = '√' + target;
+            }
         }
         document.getElementById('answer').textContent = answer;
     }
@@ -137,7 +196,8 @@
             input_textbox = input_textbox.slice(0, 15);
         }
         var input_Number = Number(input_textbox);
-        if (Number.isInteger(input_Number) == true && input_textbox.length != 0) {
+        
+        if (Number.isInteger(input_Number) == true && input_textbox.length != 0 && input_Number > 0) {
             var mode = document.getElementById('mode_select').value;
             if (answer != 'enpty') {
                 var table = document.getElementById('answer_remain');
@@ -149,21 +209,19 @@
                 var text = document.createTextNode(answer);
                 newCell.appendChild(text);
             }
-            if (mode == 'hantei') {
-                if (hantei(input_Number) == '素数です') {
-                    answer = input_Number + 'は素数です';
-                } else {
-                    answer = input_Number + 'は素数ではありません';
-                }
-                document.getElementById('answer').textContent = answer;
-            } else if (mode == 'bunkai') {
+            if (mode == 'bunkai') {
                 bunkai(input_Number);
+            } else if (mode == 'heihoukonn') {
+                heihoukonn(input_Number);
             } else if (mode == 'nishinhenkann') {
                 nishinhenkann(input_Number);
             } else if (mode == 'jisshinhenkann') {
                 jisshinhenkann(input_Number);
             }
         } else {
+            if (input_Number <= 0) {
+                alert('自然数以外の数字は対応していません');
+            }
             document.getElementById('Number_slot').value = '';
             document.getElementById('answer').textContent = '';
         }
@@ -205,11 +263,11 @@ button {
 </style>
 </head>
 <body style="text-align: center; font-family: sans-serif; font-size: 15px;">
-<h1>素数判定・素因数分解<br>二進数変換・十進数変換</h1>
+<h1>素因数分解・平方根計算<br>二進数変換・十進数変換</h1>
 <input type="text" id="Number_slot" placeholder="数字を入力">を
 <select id="mode_select">
-    <option value="hantei">素数か判定</option>
     <option value="bunkai">素因数分解</option>
+    <option value="heihoukonn">平方根計算</option>
     <option value="nishinhenkann">二進数に変換</option>
     <option value="jisshinhenkann">十進数に変換</option>
 </select>
@@ -217,6 +275,6 @@ button {
 <p><a id="answer"></a></p>
 <table id="answer_remain" class="table">履歴</table>
 <p style="font-size: 15px;">sk3136, CC BY-SA 4.0</p>
-<p style="font-size: 15px;">ご意見・ご要望等は、<br><a href="https://github.com/sk3136/sosuuhantei_etc/issues">こちらのissues</a>にお寄せください。</p>
+<p style="font-size: 15px;">ご意見・ご要望等は、<br><a href="https://github.com/sk3136/soinsuubunkai_etc/issues">こちらのissues</a>にお寄せください。</p>
 </body>
 </html>
