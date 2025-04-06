@@ -71,8 +71,8 @@
             }
             answer = target + ' = ' + factor_indication;
         } else {
-            if (target == 1) {
-                answer = target + 'は合成数ですが、素因数分解はできません';
+            if (target == 0 || target == 1) {
+                answer = target + 'は素因数分解できません';
             } else {
                 answer = target + 'は素数です';
             }
@@ -88,7 +88,7 @@
                 for (var i = 1; i < Num + 1; i++) {
                     if (hantei(i) == '素数です' && Number.isInteger(Num / i) == true) {
                         factor_list.push(i);
-                        Num = Num / i;
+                        Num /= i;
                         break;
                     }
                     if (hantei(Num) == '素数です') {
@@ -101,35 +101,61 @@
 
             var count = 0;
             var count_list = [];
+            var factor_kind = [];
             for (var i = 0; i < factor_list.length; i++) {
                 if (factor_list[i] == factor_list[i + 1]) {
                     count++;
                 } else if (factor_list[i] != factor_list[i + 1]) {
                     count++;
                     count_list.push(count);
+                    factor_kind.push(factor_list[i]);
                     count = 0;
                 }
             }
-            var factor_indication = '';
-            var progress = 0;
-            for (var i = 0; i < factor_list.length; i++) {
-                if (i == 0) {
-                    factor_indication = factor_list[i];
-                } else if (factor_list[i] == factor_list[i - 1] && factor_list[i] != factor_list[i + 1]) {
-                    factor_indication = factor_indication + '^' + count_list[progress];
-                } else if (factor_list[i] != factor_list[i - 1]) {
-                    factor_indication = factor_indication + ' × ' + factor_list[i];
-                }
-                if (factor_list[i] != factor_list[i + 1]) {
-                    progress++;
+            var heihou_list = [];
+            var memo = '';
+            for (var i = 0; i < count_list.length; i++) {
+                if (count_list[i] % 2 == 0) {
+                    memo = factor_kind[i] ** (count_list[i] / 2);
+                    heihou_list.push(memo);
+                    memo = '';
+                } else if (count_list[i] > 2) {
+                    memo = factor_kind[i] ** ((count_list[i] - 1) / 2);
+                    memo = memo + "√" + factor_kind[i];
+                    heihou_list.push(memo);
+                    memo = '';
+                } else {
+                    memo = "√" + factor_kind[i];
+                    heihou_list.push(memo);
+                    memo = '';
                 }
             }
-            answer = target + ' = ' + factor_indication;
-        } else {
-            if (target == 1) {
-                answer = target;
+            var heihou_indication = '';
+            var int = 1;
+            var root = 1;
+            for (var i = 0; i < heihou_list.length; i++) {
+                if (String(heihou_list[i]).includes("√") == true) {
+                    if (String(heihou_list[i]).indexOf("√") != 0) {
+                        int *= Number(heihou_list[i].slice(0, String(heihou_list[i]).indexOf("√")));
+                    }
+                    root *= Number(heihou_list[i].slice(String(heihou_list[i]).indexOf("√") + 1, String(heihou_list[i]).length));
+                } else {
+                    int *= Number(heihou_list[i]);
+                }
+            }
+            if (int == 1) {
+                heihou_indication = "√" + root;
+            } else if (root == 1) {
+                heihou_indication = int;
             } else {
-                answer = '√' + target;
+                heihou_indication = int + "√" + root;
+            }
+            answer = target + 'の平方根は±' + heihou_indication;
+        } else {
+            if (target == 0 || target == 1) {
+                answer = target + 'の平方根は±' + target;
+            } else {
+                answer = target + 'の平方根は±√' + target;
             }
         }
         document.getElementById('answer').textContent = answer;
@@ -139,28 +165,27 @@
         var digits = 1;
         var max = 1;
         var digits_max = 1;
+        var digits_max_list = [1];
         while (target > max) {
             max = 1;
             digits_max = 1;
             for (var i = 0; i < digits; i++) {
-                digits_max = digits_max * 2;
-                max = max + digits_max;
+                digits_max *= 2;
+                max += digits_max;
             }
+            digits_max_list.push(digits_max);
             digits++;
         }
         var digits_decision = target;
         var digits_Number = '';
-        for (var i = 0; i < digits; i++) {
-            var digits_down = 1;
-            for (var j = 0; j < i; j++) {
-                digits_down = digits_down / 2;
-            }
-            if (digits_decision >= digits_max * digits_down) {
-                digits_decision = digits_decision - digits_max * digits_down;
-                digits_Number = digits_Number + '1 ';
+        while (digits > 0) {
+            if (digits_decision >= digits_max_list[digits - 1]) {
+                digits_decision -= digits_max_list[digits - 1];
+                digits_Number += '1 ';
             } else {
-                digits_Number = digits_Number + '0 ';
+                digits_Number += '0 ';
             }
+            digits--;
         }
         answer = target + ' = ' + digits_Number;
         document.getElementById('answer').textContent = answer;
@@ -169,9 +194,9 @@
     function jisshinhenkann(target) {
         var Number_list = [];
         var possible = true;
-        for (var i = 0; i < String(target).length; i++) {
-            Number_list.push(String(target).slice(i, i + 1));
-            if (String(target).slice(i, i + 1) >= 2) {
+        for (var i = 0; i < target.length; i++) {
+            Number_list.push(target.slice(i, i + 1));
+            if (Number_list[i] >= 2) {
                 possible = false;
                 answer = target + 'は変換できません';
                 break;
@@ -181,8 +206,8 @@
             var total = 0;
             var digits_magnification = 1;
             for (var i = Number_list.length - 1; i >= 0; i--) {
-                total = total + Number_list[i] * digits_magnification;
-                digits_magnification = digits_magnification * 2;
+                total += Number_list[i] * digits_magnification;
+                digits_magnification *= 2;
             }
             answer = target + ' = ' + total;
         }
@@ -190,14 +215,12 @@
     }
 
     function mode_change() {
-        var input_textbox = document.getElementById('Number_slot').value.replace(/,/g, '').replace(/ /g, '');
-        if (input_textbox.length >= 16) {
-            alert('16桁以上の数字は正確に表示できません');
-            input_textbox = input_textbox.slice(0, 15);
-        }
+        var input_textbox = String(document.getElementById('Number_slot').value.replace(/,/g, '').replace(/ /g, ''));
         var input_Number = Number(input_textbox);
-        
-        if (Number.isInteger(input_Number) == true && input_textbox.length != 0 && input_Number > 0) {
+        if (input_textbox.length >= 16) {
+            input_Number = Number(input_textbox.slice(0, 15));
+        }
+        if (Number.isInteger(input_Number) == true && input_textbox.length != 0 && input_Number >= 0) {
             var mode = document.getElementById('mode_select').value;
             if (answer != 'enpty') {
                 var table = document.getElementById('answer_remain');
@@ -209,6 +232,9 @@
                 var text = document.createTextNode(answer);
                 newCell.appendChild(text);
             }
+            if (input_textbox.length >= 16 && mode != 'jisshinhenkann') {
+                alert('16桁以上の数字は正確に表示できません');
+            }
             if (mode == 'bunkai') {
                 bunkai(input_Number);
             } else if (mode == 'heihoukonn') {
@@ -216,11 +242,21 @@
             } else if (mode == 'nishinhenkann') {
                 nishinhenkann(input_Number);
             } else if (mode == 'jisshinhenkann') {
-                jisshinhenkann(input_Number);
+                jisshinhenkann(input_textbox);
             }
         } else {
-            if (input_Number <= 0) {
-                alert('自然数以外の数字は対応していません');
+            if (input_Number < 0) {
+                if (answer != 'enpty') {
+                    var table = document.getElementById('answer_remain');
+                    if (table.rows.length >= 10) {
+                        table.deleteRow(9);
+                    }
+                    var newRow = table.insertRow(0);
+                    var newCell = newRow.insertCell();
+                    var text = document.createTextNode(answer);
+                    newCell.appendChild(text);
+                }
+                alert('負の数には対応していません');
             }
             document.getElementById('Number_slot').value = '';
             document.getElementById('answer').textContent = '';
